@@ -25,6 +25,8 @@ class StockRequest:
         self.base_url = 'https://www.alphavantage.co/'
 
     def get_single_stock_prices(self, symbol: str, start_date: date=None, end_date: date=None) -> dict:
+        print(symbol)
+        
         data = {
             'function': 'TIME_SERIES_DAILY',
             'apikey': self.key,
@@ -33,7 +35,10 @@ class StockRequest:
         }
 
         params = urlencode(data)
-        r = requests.get(url=f'{self.base_url}query?', params=data)
+        r = requests.get(url=f'{self.base_url}query?', params=params)
+        print(r.json())
+        if '100 requests/day limit' in str(r.json()):
+            return dict({})
         response_json: dict = r.json()['Time Series (Daily)']
         
         if start_date is None and end_date is None:
@@ -60,6 +65,7 @@ class StockRequest:
         return response
     
     def percent_diff_between_days(self, symbol: str, day1: date, day2: date) -> float:
+        print(symbol)
         if day1 == day2:
             return 'Same date given'
         
@@ -80,10 +86,8 @@ class StockRequest:
         close2 = float(response2[day2.strftime('%Y-%m-%d')]['4. close'])
 
         if day1 > day2:
-            print(1)
             return ((close2 - close1)/close1) * 100
         elif day2 > day1:
-            print(2)
             return ((close1 - close2)/close2) * 100
             
 

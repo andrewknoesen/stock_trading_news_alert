@@ -1,20 +1,43 @@
 
 from apis.stock_price import stock_request
 from apis.news import news_request
+from apis.telegram import telegram
 from datetime import (
     date,
     timedelta,
 )
+from time import sleep
 STOCK = "TSLA"
 COMPANY_NAME = "Tesla Inc"
 
-def get_stock_diff():
-    s = stock_request.StockRequest()
-    return s.percent_diff_between_days(STOCK, date.today() - timedelta(days=1), date.today() - timedelta(days=2))
+COMPANIES = {
+    'TSLA': "Tesla",
+    'GOOGL': 'Google',
+    'AAPL': 'Apple',
+    'NVDA': 'Nvidia',
+}
 
-def get_article():
+MSG = """
+$ticker
+
+*$title*
+
+$link
+            
+$summary
+"""
+
+def get_stock_diff(stock):
+    s = stock_request.StockRequest()
+    return s.percent_diff_between_days(stock, date.today() - timedelta(days=1), date.today() - timedelta(days=2))
+
+def get_article(company):
     n = news_request.NewsRequest()
-    return n.get_article(company=COMPANY_NAME)
+    return n.get_article(company)
+
+def send_message(message):
+    t = telegram.Telegram()
+    return t.send_message(message)
 
 #Optional: Format the SMS message like this: 
 """
@@ -28,20 +51,34 @@ Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and 
 """
 
 def main():
-    ## STEP 1: Use https://www.alphavantage.co
-    # When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
-    diff = get_stock_diff()
+    for k,v in COMPANIES.items():
+        ## STEP 1: Use https://www.alphavantage.co
+        # When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
+        diff = get_stock_diff(k)
+        if 'no entries' in diff:
+            sleep(12) #for fair use in api
+            continue
 
-    ## STEP 2: Use https://newsapi.org
-    # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
-    if (abs(diff) >= 5):
-        get_article(COMPANY_NAME)
+        ## STEP 2: Use https://newsapi.org
+        # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
+        if (abs(diff) >= 5):
+            articles = get_article(v)
 
-    
+        ## STEP 3: Use https://www.twilio.com
+        # Send a seperate message with the percentage change and each article's title and description to your phone number. 
+        if (len(articles) > 0):
+            for article in articles:
+                msg=MSG
+                if diff > 0:
+                    diff_msg = f'🔺{int(diff)}%'
+                else:
+                    diff_msg = f'🔻{int(diff)}%'
 
-    ## STEP 3: Use https://www.twilio.com
-    # Send a seperate message with the percentage change and each article's title and description to your phone number. 
-
+                msg = msg.replace('$ticker', f'{k}: {diff_msg}')
+                msg = msg.replace('$title', article["title"])
+                msg = msg.replace('$link', article["url"])
+                msg = msg.replace('$summary', article["description"])
+                send_message(str(msg))
     
 if __name__ == '__main__':
     main()
