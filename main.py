@@ -1,21 +1,23 @@
 
 from apis.stock_price import stock_request
 from apis.news import news_request
-from apis.telegram import telegram
+from apis.telegram import telegram_handler
 from datetime import (
     date,
     timedelta,
 )
 from time import sleep
-STOCK = "TSLA"
-COMPANY_NAME = "Tesla Inc"
 
-COMPANIES = {
-    'TSLA': "Tesla",
-    'GOOGL': 'Google',
-    'AAPL': 'Apple',
-    'NVDA': 'Nvidia',
-}
+import json
+
+# COMPANIES = {
+#     'TSLA': "Tesla",
+#     'GOOGL': 'Google',
+#     'AAPL': 'Apple',
+#     'NVDA': 'Nvidia',
+# }
+
+COMPANIES = {}
 
 MSG = """
 $ticker
@@ -36,9 +38,19 @@ def get_article(company):
     return n.get_article(company)
 
 def send_message(message):
-    t = telegram.Telegram()
+    t = telegram_handler.Telegram()
     return t.send_message(message)
 
+def load_companies():
+    with open("./companies.json") as f:
+        c = json.load(f)
+
+    return c
+
+
+def export_companies(companies):
+    with open("./companies1.json", "w") as f:
+        json.dump(companies, f, indent=4)
 #Optional: Format the SMS message like this: 
 """
 TSLA: 🔺2%
@@ -51,11 +63,14 @@ Brief: We at Insider Monkey have gone over 821 13F filings that hedge funds and 
 """
 
 def main():
-    for k,v in COMPANIES.items():
+    companies = load_companies()
+    
+    for k,v in companies.items():
+        articles = None
         ## STEP 1: Use https://www.alphavantage.co
         # When STOCK price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
         diff = get_stock_diff(k)
-        if 'no entries' in diff:
+        if 'no entries' == diff:
             sleep(12) #for fair use in api
             continue
 
@@ -66,7 +81,7 @@ def main():
 
         ## STEP 3: Use https://www.twilio.com
         # Send a seperate message with the percentage change and each article's title and description to your phone number. 
-        if (len(articles) > 0):
+        if articles is not None and(len(articles) > 0):
             for article in articles:
                 msg=MSG
                 if diff > 0:
@@ -79,6 +94,6 @@ def main():
                 msg = msg.replace('$link', article["url"])
                 msg = msg.replace('$summary', article["description"])
                 send_message(str(msg))
-    
+
 if __name__ == '__main__':
     main()

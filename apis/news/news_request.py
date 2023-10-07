@@ -16,7 +16,7 @@ class NewsRequest:
 
         self.base_url = 'https://newsapi.org/v2/'
 
-    def get_article(self, company, num_articles=3):
+    def get_article(self, company, num_articles=3) -> list:
         data = {
             'q': company,
             'apiKey': self.key,
