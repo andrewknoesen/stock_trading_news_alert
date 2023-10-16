@@ -98,7 +98,7 @@ class Telegram():
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         """Start the conversation and ask user for input."""
         await update.message.reply_text(
-            "Greetings!"
+            "Greetings! \n"
             "What would you like to do?",
             reply_markup=markup,
         )

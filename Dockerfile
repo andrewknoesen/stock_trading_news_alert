@@ -26,7 +26,7 @@ RUN pip3 install -r requirements.txt
 RUN chmod +x /start_service.sh
 RUN chmod +x /main.py
 
-EXPOSE 80
+# EXPOSE 80
 
 # CMD ["cron", "-f"]
 CMD ["bash", "start_service.sh"]
