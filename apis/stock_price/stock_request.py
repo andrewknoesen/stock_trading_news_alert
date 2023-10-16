@@ -94,7 +94,7 @@ class StockRequest:
 
 if __name__ == '__main__':
     s = StockRequest()
-    start_date = date(2023, 9, 24)
-    end_date = date(2023, 9, 21)
+    start_date = date(2023, 10, 13)
+    end_date = date(2023, 10, 12)
     print(s.percent_diff_between_days('TSLA', start_date, end_date))
     

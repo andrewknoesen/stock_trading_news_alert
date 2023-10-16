@@ -8,6 +8,7 @@ from datetime import (
 )
 from time import sleep
 
+import os
 import json
 
 # COMPANIES = {
@@ -31,7 +32,7 @@ $summary
 
 def get_stock_diff(stock):
     s = stock_request.StockRequest()
-    return s.percent_diff_between_days(stock, date.today() - timedelta(days=1), date.today() - timedelta(days=2))
+    return s.percent_diff_between_days(stock, date.today() - timedelta(days=12), date.today() - timedelta(days=5))
 
 def get_article(company):
     n = news_request.NewsRequest()
@@ -42,15 +43,17 @@ def send_message(message):
     return t.send_message(message)
 
 def load_companies():
-    with open("./companies.json") as f:
+     # Get the directory where the script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Combine the script directory with the 'key' file name
+    companies_path = os.path.join(script_dir, 'companies.json')
+
+    with open(companies_path) as f:
         c = json.load(f)
 
     return c
 
-
-def export_companies(companies):
-    with open("./companies1.json", "w") as f:
-        json.dump(companies, f, indent=4)
 #Optional: Format the SMS message like this: 
 """
 TSLA: 🔺2%
@@ -76,7 +79,11 @@ def main():
 
         ## STEP 2: Use https://newsapi.org
         # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
-        if (abs(diff) >= 5):
+        print(f'Current diff for {k} is {diff}')
+        if (type(diff) == str):
+            print(f'No reuslts for {k}')
+            continue
+        if (abs(diff) >= 3):
             articles = get_article(v)
 
         ## STEP 3: Use https://www.twilio.com

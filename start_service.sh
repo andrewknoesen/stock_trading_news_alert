@@ -1,4 +1,5 @@
 #!/bin/bash
 
-exec python3 main.py &
+echo "Starting"
+exec cron -f &
 exec python3 telegram_main.py

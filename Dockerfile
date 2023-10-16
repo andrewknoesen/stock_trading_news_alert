@@ -1,27 +1,32 @@
 # FROM amazon/aws-lambda-python:3.9
-FROM --platform=linux/amd64 python:3.9
+FROM --platform=linux/amd64 python:3.11
 
 LABEL maintainer="Andrew Knoesen"
 # Installs python, removes cache file to make things smaller
 RUN apt update -y && \
-    apt install -y python3 python3-dev python3-pip gcc cron && \
+    apt install -y cron && \
     rm -Rf /var/cache/apt
 
 # Copies requirements.txt file into the container
-COPY requirements.txt ./
-# Installs dependencies found in your requirements.txt file
-RUN pip install -r requirements.txt
-
-# Be sure to copy over the function itself!
-# Goes last to take advantage of Docker caching.
 COPY . .
+
+# Copy the cron file to the container
+COPY cronfile /etc/cron.d/cronfile
+RUN touch /var/log/cron.log
+
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/cronfile
+
+# Apply the cron job
+RUN crontab /etc/cron.d/cronfile
+
+# Installs dependencies found in your requirements.txt file
+RUN pip3 install -r requirements.txt
+
+RUN chmod +x /start_service.sh
+RUN chmod +x /main.py
 
 EXPOSE 80
 
-# Points to the handler function of your lambda function
-# CMD ["app.handler"]
-# ENTRYPOINT [ "executable" ]
-# CMD ["python3", "main.py"]
-RUN chmod a+x script.sh
-
-CMD ["./script.sh"]
+# CMD ["cron", "-f"]
+CMD ["bash", "start_service.sh"]
