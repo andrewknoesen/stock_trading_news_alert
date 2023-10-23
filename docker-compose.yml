@@ -1,9 +1,10 @@
-version: '1'
 services:
   main:
     restart: always
     build:
       context: .
+      platforms:
+        - linux/arm64
       dockerfile: Dockerfile
     environment:
       - ALPHAVANTAGE_KEY=<>
