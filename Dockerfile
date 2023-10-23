@@ -1,5 +1,5 @@
 # FROM amazon/aws-lambda-python:3.9
-FROM --platform=linux/arm64 python:3.11
+FROM --platform=linux/arm64/v8 python:3.11
 
 LABEL maintainer="Andrew Knoesen"
 # Installs python, removes cache file to make things smaller
