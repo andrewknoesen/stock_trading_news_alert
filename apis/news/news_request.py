@@ -9,10 +9,11 @@ class NewsRequest:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         
         # Combine the script directory with the 'key' file name
-        key_path = os.path.join(script_dir, 'key')
+        # key_path = os.path.join(script_dir, 'key')
 
-        with open(key_path) as f:
-            self.key = f.read()
+        # with open(key_path) as f:
+        #     self.key = f.read()
+        self.key = os.environ['NEWS_API_KEY']
 
         self.base_url = 'https://newsapi.org/v2/'
 
