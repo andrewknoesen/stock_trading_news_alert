@@ -1,7 +1,7 @@
 services:
   main:
     restart: always
-    platform: linux/arm32
+    platform: linux/arm64
     build:
       context: .
       dockerfile: Dockerfile
