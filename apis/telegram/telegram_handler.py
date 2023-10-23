@@ -63,13 +63,15 @@ class Telegram():
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
 
         # Combine the script directory with the 'key' file name
-        key_path = os.path.join(self.script_dir, 'token')
+        # key_path = os.path.join(self.script_dir, 'token')
 
-        with open(key_path) as f:
-            self.token = f.read()
+        # with open(key_path) as f:
+        #     self.token = f.read()
+        self.token = os.environ['TELEGRAM_TOKEN']
 
-        with open(os.path.join(self.script_dir, 'subscribers')) as f:
-            self.subscriber = f.read()
+        # with open(os.path.join(self.script_dir, 'subscribers')) as f:
+        #     self.subscriber = f.read()
+        self.subscriber = os.environ['TELEGRAM_SUBSCRIBERS']
 
         self.base_url = f'https://api.telegram.org/bot{self.token}/'
 

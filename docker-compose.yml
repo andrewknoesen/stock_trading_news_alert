@@ -1,0 +1,11 @@
+version: '1'
+services:
+  main:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ALPHAVANTAGE_KEY=<>
+      - TELEGRAM_SUBSCRIBERS=<>
+      - TELEGRAM_TOKEN=<>

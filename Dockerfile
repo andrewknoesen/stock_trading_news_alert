@@ -24,7 +24,8 @@ RUN crontab /etc/cron.d/cronfile
 RUN pip3 install -r requirements.txt
 
 RUN chmod +x /start_service.sh
-RUN chmod +x /main.py
+RUN chmod +x /telegram_main.py
+RUN chmod +x /stock_alerter_main.py
 
 # EXPOSE 80
 
