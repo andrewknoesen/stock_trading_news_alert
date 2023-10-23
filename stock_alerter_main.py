@@ -32,7 +32,7 @@ $summary
 
 def get_stock_diff(stock):
     s = stock_request.StockRequest()
-    return s.percent_diff_between_days(stock, date.today() - timedelta(days=12), date.today() - timedelta(days=5))
+    return s.percent_diff_between_days(stock, date.today() - timedelta(days=2), date.today() - timedelta(days=1))
 
 def get_article(company):
     n = news_request.NewsRequest()
